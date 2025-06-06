@@ -1,0 +1,201 @@
+<div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+  <div class="bg-white w-full h-full overflow-auto">
+    <!-- Header with branding and user info -->
+    <div class="bg-white border-b border-gray-200 px-6 py-3">
+      <div class="flex items-center justify-between">
+        <div class="text-lg font-semibold text-blue-900 italic">
+          Rendimento câmbio
+        </div>
+        <div class="flex items-center space-x-4">
+          <lucide-icon name="bell" class="h-5 w-5 text-gray-600"></lucide-icon>
+          <lucide-icon name="user" class="h-5 w-5 text-gray-600"></lucide-icon>
+          <span class="text-sm text-gray-700">Olá, Manuela</span>
+          <div class="w-2 h-2 bg-gray-400 rounded-full"></div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Navigation bar -->
+    <div class="bg-white border-b border-gray-200 px-6 py-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center">
+          <button 
+            (click)="onCancel()"
+            class="mr-4 p-2 rounded-full hover:bg-gray-100"
+          >
+            <lucide-icon name="arrow-left" class="h-5 w-5 text-gray-600"></lucide-icon>
+          </button>
+          <h1 class="text-xl font-semibold text-gray-900">
+            Arquivos Lançados
+          </h1>
+        </div>
+        <button 
+          (click)="onCancel()"
+          class="p-2 rounded-full hover:bg-gray-100"
+        >
+          <lucide-icon name="x-circle" class="h-6 w-6 text-gray-600"></lucide-icon>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Main content -->
+    <div class="px-6 py-6">
+      <div class="max-w-7xl mx-auto">
+        <!-- Summary and toggle section -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          <!-- Summary card -->
+          <div class="bg-gray-50 rounded-lg p-6">
+            <h2 class="text-lg font-semibold text-gray-900 mb-4">Arquivos Lançados</h2>
+            <div class="space-y-3">
+              <div>
+                <p class="text-sm text-gray-600">Valor Total dos Boletos:</p>
+                <p class="text-lg font-semibold text-gray-900">
+                  $ {{ totalForeignValue | number:'1.2-2':'pt-BR' }} / 
+                  R$ {{ totalNationalValue | number:'1.2-2':'pt-BR' }}
+                </p>
+              </div>
+              <div class="grid grid-cols-1 gap-2">
+                <div class="bg-blue-100 p-3 rounded">
+                  <p class="text-sm text-blue-800">Soma Arquivos Moeda Estrangeira</p>
+                  <p class="text-lg font-bold text-blue-900">
+                    R$ {{ totalForeignValue | number:'1.2-2':'pt-BR' }}
+                  </p>
+                </div>
+                <div class="bg-green-100 p-3 rounded">
+                  <p class="text-sm text-green-800">Soma Arquivos Moedas Nacional</p>
+                  <p class="text-lg font-bold text-green-900">
+                    R$ {{ totalNationalValue | number:'1.2-2':'pt-BR' }}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Skip linking toggle -->
+          <div class="bg-gray-50 rounded-lg p-6">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center">
+                <span class="text-gray-900 font-medium">Não quero vincular Arquivos</span>
+                <lucide-icon name="info" class="h-4 w-4 text-gray-400 ml-2"></lucide-icon>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  [checked]="skipLinking"
+                  (change)="onSkipToggle($event.target?.checked || false)"
+                  class="sr-only peer"
+                />
+                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+              </label>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Search section -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">Buscar por data</h3>
+          <div class="flex items-center space-x-4">
+            <div class="flex-1">
+              <label class="block text-sm font-medium text-gray-700 mb-1">De</label>
+              <input
+                type="date"
+                [(ngModel)]="startDate"
+                class="form-input"
+                [disabled]="skipLinking"
+              />
+            </div>
+            <div class="flex-1">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Até</label>
+              <input
+                type="date"
+                [(ngModel)]="endDate"
+                class="form-input"
+                [disabled]="skipLinking"
+              />
+            </div>
+            <div class="pt-6">
+              <button 
+                class="btn-primary flex items-center"
+                [disabled]="skipLinking"
+                (click)="filterDocuments()"
+              >
+                <lucide-icon name="search" class="h-4 w-4 mr-2"></lucide-icon>
+                Buscar
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Documents table -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden mb-6">
+          <div class="table-container">
+            <table class="data-table">
+              <thead class="table-header">
+                <tr>
+                  <th class="table-header-cell w-12">Select</th>
+                  <th class="table-header-cell">Nome do Arquivo</th>
+                  <th class="table-header-cell">Moeda</th>
+                  <th class="table-header-cell">Valor M. Nacional</th>
+                  <th class="table-header-cell">Valor M. Estrangeira</th>
+                  <th class="table-header-cell">Status do Arquivos</th>
+                </tr>
+              </thead>
+              <tbody class="table-body">
+                <tr 
+                  *ngFor="let document of filteredDocuments" 
+                  [class]="'table-row cursor-pointer ' + 
+                    (isSelected(document.id) ? 'bg-blue-50 ' : '') + 
+                    (skipLinking ? 'opacity-50 cursor-not-allowed' : '')"
+                  (click)="toggleDocumentSelection(document.id)"
+                >
+                  <td class="table-cell">
+                    <div class="flex items-center justify-center">
+                      <div [class]="'h-5 w-5 border rounded flex items-center justify-center ' + 
+                        (isSelected(document.id) ? 'bg-blue-600 border-blue-600' : 'border-gray-300')">
+                        <lucide-icon 
+                          *ngIf="isSelected(document.id)" 
+                          name="check" 
+                          class="h-4 w-4 text-white">
+                        </lucide-icon>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="table-cell font-medium text-gray-900">{{ document.name }}</td>
+                  <td class="table-cell">{{ document.currency }}</td>
+                  <td class="table-cell">
+                    R$ {{ document.nationalValue | number:'1.2-2':'pt-BR' }}
+                  </td>
+                  <td class="table-cell">
+                    ${{ document.foreignValue | number:'1.2-2':'pt-BR' }}
+                  </td>
+                  <td class="table-cell">
+                    <span [class]="'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ' + getStatusClass(document.status)">
+                      {{ document.status }}
+                    </span>
+                  </td>
+                </tr>
+                
+                <tr *ngIf="filteredDocuments.length === 0">
+                  <td colspan="6" class="table-cell text-center py-8 text-gray-500">
+                    Nenhum documento encontrado.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        
+        <!-- Action button -->
+        <div class="flex justify-center">
+          <button 
+            class="btn-primary px-12 py-3 text-lg"
+            (click)="onSubmit()"
+            [disabled]="!skipLinking && selectedDocumentIds.length === 0"
+          >
+            Próximo
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

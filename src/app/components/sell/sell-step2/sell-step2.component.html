@@ -1,0 +1,258 @@
+<div class="min-h-screen bg-gray-50">
+  <header class="bg-white shadow-sm py-4">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center">
+      <button 
+        (click)="navigateBack()" 
+        class="mr-4 p-2 rounded-full hover:bg-gray-100"
+      >
+        <lucide-icon name="arrow-left" class="h-5 w-5 text-gray-600"></lucide-icon>
+      </button>
+      <h1 class="text-xl font-semibold text-gray-900 flex items-center">
+        <lucide-icon name="dollar-sign" class="mr-2 h-6 w-6 text-blue-700"></lucide-icon>
+        Nova Operação de Venda: Complemento
+      </h1>
+    </div>
+  </header>
+  
+  <main class="py-8">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+      <form [formGroup]="sellForm" (ngSubmit)="onSubmit()">
+        <app-card className="mb-6" title="Resumo da Operação">
+          <div class="grid grid-cols-2 gap-4 mb-4">
+            <div>
+              <p class="text-sm text-gray-500">Moeda Estrangeira</p>
+              <p class="font-medium">{{ operationData.foreignCurrency }}</p>
+            </div>
+            <div>
+              <p class="text-sm text-gray-500">Valor Estrangeiro</p>
+              <p class="font-medium">
+                {{ operationData.foreignCurrencyAmount | number:'1.2-2':'pt-BR' }}
+              </p>
+            </div>
+            <div>
+              <p class="text-sm text-gray-500">Taxa de Câmbio</p>
+              <p class="font-medium">
+                {{ operationData.exchangeRate | number:'1.4-4':'pt-BR' }}
+              </p>
+            </div>
+            <div>
+              <p class="text-sm text-gray-500">Spread</p>
+              <p class="font-medium">{{ operationData.spread }}%</p>
+            </div>
+            <div class="col-span-2">
+              <p class="text-sm text-gray-500">Total da Operação (BRL)</p>
+              <p class="font-medium text-lg text-blue-800">
+                R$ {{ operationData.totalAmount | number:'1.2-2':'pt-BR' }}
+              </p>
+            </div>
+          </div>
+        </app-card>
+        
+        <app-card className="mb-6">
+          <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+            <app-form-field id="nature" label="Natureza" [required]="true">
+              <select 
+                id="nature"
+                class="form-select"
+                formControlName="nature"
+                required
+              >
+                <option value="">Selecione...</option>
+                <option value="ImportOfGoods">Importação de Mercadorias</option>
+                <option value="TechnicalServices">Serviços Técnicos</option>
+                <option value="ResidentMaintenance">Manutenção de Residente</option>
+                <option value="ImportPayment">Pagamento de Importação</option>
+                <option value="EFX">EFX</option>
+                <option value="Other">Outros</option>
+              </select>
+            </app-form-field>
+            
+            <app-form-field id="iof" label="IOF (%)">
+              <select 
+                id="iof"
+                class="form-select"
+                formControlName="iof"
+              >
+                <option value="">Selecione...</option>
+                <option value="0.38">0.38%</option>
+                <option value="1.1">1.1%</option>
+                <option value="0.0">Isento</option>
+              </select>
+            </app-form-field>
+            
+            <app-form-field id="ir" label="IR (%)">
+              <app-percentage-input 
+                id="ir"
+                formControlName="ir">
+              </app-percentage-input>
+            </app-form-field>
+            
+            <app-form-field id="valutaNational" label="Valuta Nacional" [required]="true">
+              <select 
+                id="valutaNational"
+                class="form-select"
+                formControlName="valutaNational"
+                required
+              >
+                <option value="D0">D0 (Hoje)</option>
+                <option value="D1">D1 (Amanhã)</option>
+                <option value="D2">D2 (Depois de Amanhã)</option>
+              </select>
+            </app-form-field>
+            
+            <app-form-field id="valutaForeign" label="Valuta Estrangeira" [required]="true">
+              <select 
+                id="valutaForeign"
+                class="form-select"
+                formControlName="valutaForeign"
+                required
+              >
+                <option value="D0">D0 (Hoje)</option>
+                <option value="D1">D1  (Amanhã)</option>
+                <option value="D2">D2 (Depois de Amanhã)</option>
+              </select>
+            </app-form-field>
+            
+            <app-form-field id="settlementTypeBrazil" label="Tipo de Liquidação no Brasil" [required]="true">
+              <select 
+                id="settlementTypeBrazil"
+                class="form-select"
+                formControlName="settlementTypeBrazil"
+                required
+              >
+                <option value="Conta">Conta</option>
+                <option value="Cheque">Cheque</option>
+                <option value="Ordem">Ordem</option>
+                <option value="Especie">Espécie</option>
+              </select>
+            </app-form-field>
+            
+            <app-form-field id="settlementTypeAbroad" label="Tipo de Liquidação no Exterior" [required]="true">
+              <select 
+                id="settlementTypeAbroad"
+                class="form-select"
+                formControlName="settlementTypeAbroad"
+                required
+              >
+                <option value="Conta">Conta</option>
+                <option value="Cheque">Cheque</option>
+                <option value="Ordem">Ordem</option>
+                <option value="Especie">Espécie</option>
+              </select>
+            </app-form-field>
+          </div>
+        </app-card>
+
+        <app-card className="mb-6" title="Dados Complementares">
+          <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+            <app-form-field id="relationshipLink" label="Relação de Vínculo">
+              <select 
+                id="relationshipLink"
+                class="form-select"
+                formControlName="relationshipLink"
+              >
+                <option value="">Selecione...</option>
+                <option value="matriz">Matriz</option>
+                <option value="filial">Filial</option>
+                <option value="coligada">Coligada</option>
+                <option value="controlada">Controlada</option>
+                <option value="controladora">Controladora</option>
+                <option value="nenhum">Nenhum</option>
+              </select>
+            </app-form-field>
+
+            <app-form-field id="sellerCode" label="Código Vendedor">
+              <select 
+                id="sellerCode"
+                class="form-select"
+                formControlName="sellerCode"
+              >
+                <option value="">Selecione...</option>
+                <option value="67">67 - Classificação não requerida pela regulamentação</option>
+                <option value="05">05 - Empresas não financeiras</option>
+                <option value="10">10 - Bancos comerciais</option>
+                <option value="15">15 - Bancos de investimento</option>
+              </select>
+            </app-form-field>
+
+            <app-form-field id="groupCode" label="Grupo">
+              <select 
+                id="groupCode"
+                class="form-select"
+                formControlName="groupCode"
+              >
+                <option value="">Selecione...</option>
+                <option value="67">67 - Classificação não requerida pela regulamentação</option>
+                <option value="05">05 - Empresas não financeiras</option>
+                <option value="10">10 - Bancos comerciais</option>
+              </select>
+            </app-form-field>
+
+            <app-form-field id="payerReceiverAbroad" label="Pagador/Recebedor no Exterior">
+              <select 
+                id="payerReceiverAbroad"
+                class="form-select"
+                formControlName="payerReceiverAbroad"
+              >
+                <option value="">Selecione...</option>
+                <option value="05">05 - Empresas não financeiras</option>
+                <option value="10">10 - Bancos comerciais</option>
+                <option value="15">15 - Bancos de investimento</option>
+                <option value="20">20 - Pessoas físicas</option>
+              </select>
+            </app-form-field>
+          </div>
+        </app-card>
+
+        <!-- EFX Documents Summary -->
+        <app-card *ngIf="sellForm.get('nature')?.value === 'EFX'" className="mb-6" title="Documentos EFX">
+          <div class="bg-blue-50 p-4 rounded-lg">
+            <div *ngIf="sellForm.get('skipEfxLinking')?.value; else documentsLinked">
+              <p class="text-blue-800">
+                <strong>Vínculo de documentos ignorado</strong> - A operação prosseguirá sem vincular documentos EFX.
+              </p>
+            </div>
+            <ng-template #documentsLinked>
+              <div>
+                <p class="text-blue-800 mb-2">
+                  <strong>{{ (sellForm.get('efxDocuments')?.value || []).length }} documento(s) vinculado(s)</strong>
+                </p>
+                <button
+                  type="button"
+                  class="btn-secondary text-sm"
+                  (click)="showEFXModal = true"
+                >
+                  Editar Documentos Vinculados
+                </button>
+              </div>
+            </ng-template>
+          </div>
+        </app-card>
+        
+        <div class="flex justify-between mt-6">
+          <button 
+            type="button" 
+            class="btn-secondary"
+            (click)="navigateBack()"
+          >
+            Voltar
+          </button>
+          <button 
+            type="submit" 
+            class="btn-success"
+            [disabled]="!sellForm.valid"
+          >
+            Finalizar Operação de Venda
+          </button>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <app-efx-documents-modal 
+    *ngIf="showEFXModal"
+    [operationValue]="operationData.totalAmount || 0"
+    (submit)="onEFXDocumentsSubmit($event)"
+    (cancel)="showEFXModal = false">
+  </app-efx-documents-modal>
+</div>

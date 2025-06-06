@@ -1,0 +1,108 @@
+<div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+  <div class="bg-white rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-auto">
+    <div class="p-6">
+      <div class="flex items-start justify-between mb-4">
+        <h2 class="text-xl font-semibold text-gray-900">
+          Vincular Boletos/Arquivos à Operação
+        </h2>
+        <button 
+          class="text-gray-400 hover:text-gray-500"
+          (click)="onCancel()"
+        >
+          <lucide-icon name="x-circle" class="h-6 w-6"></lucide-icon>
+        </button>
+      </div>
+      
+      <div class="mb-6">
+        <p class="text-gray-700 mb-4">
+          A natureza selecionada permite o vínculo de boletos/documentos.
+        </p>
+        
+        <div class="bg-blue-50 p-4 rounded-lg mb-6">
+          <h3 class="font-medium text-blue-800 mb-1">Valor Total da Operação FX:</h3>
+          <p class="text-xl font-bold text-blue-900">
+            R$ {{ operationValue | number:'1.2-2':'pt-BR' }}
+          </p>
+        </div>
+        
+        <h3 class="font-medium text-gray-900 mb-2">
+          Total de Boletos/Arquivos Disponíveis para Vínculo:
+        </h3>
+        
+        <div class="table-container mb-4">
+          <table class="data-table">
+            <thead class="table-header">
+              <tr>
+                <th class="table-header-cell w-12"></th>
+                <th class="table-header-cell">Nome do Arquivo/Boleto</th>
+                <th class="table-header-cell">Valor</th>
+                <th class="table-header-cell">Data</th>
+              </tr>
+            </thead>
+            <tbody class="table-body">
+              <tr 
+                *ngFor="let document of documents" 
+                [class]="'table-row ' + (isSelected(document.id) ? 'bg-blue-50' : '')"
+                (click)="toggleDocumentSelection(document.id)"
+              >
+                <td class="table-cell">
+                  <div class="flex items-center justify-center">
+                    <div [class]="'h-5 w-5 border rounded flex items-center justify-center ' + 
+                      (isSelected(document.id) ? 'bg-blue-600 border-blue-600' : 'border-gray-300')">
+                      <lucide-icon 
+                        *ngIf="isSelected(document.id)" 
+                        name="check" 
+                        class="h-4 w-4 text-white">
+                      </lucide-icon>
+                    </div>
+                  </div>
+                </td>
+                <td class="table-cell font-medium text-gray-900">{{ document.name }}</td>
+                <td class="table-cell">
+                  R$ {{ document.value | number:'1.2-2':'pt-BR' }}
+                </td>
+                <td class="table-cell">
+                  {{ document.date | date:'dd/MM/yyyy' }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+          <div class="bg-blue-50 p-4 rounded-lg">
+            <h3 class="font-medium text-blue-800 mb-1">Total dos Arquivos Selecionados:</h3>
+            <p class="text-lg font-bold text-blue-900">
+              R$ {{ totalSelectedValue | number:'1.2-2':'pt-BR' }}
+            </p>
+          </div>
+          
+          <div [class]="'p-4 rounded-lg ' + (remainingBalance >= 0 ? 'bg-green-50' : 'bg-red-50')">
+            <h3 [class]="'font-medium mb-1 ' + (remainingBalance >= 0 ? 'text-green-800' : 'text-red-800')">
+              Saldo da Operação FX Após Vínculo:
+            </h3>
+            <p [class]="'text-lg font-bold ' + (remainingBalance >= 0 ? 'text-green-900' : 'text-red-900')">
+              R$ {{ remainingBalance | number:'1.2-2':'pt-BR' }}
+            </p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="flex justify-end space-x-4">
+        <button 
+          class="btn-secondary"
+          (click)="onCancel()"
+        >
+          Ignorar e Continuar sem Vínculo
+        </button>
+        <button 
+          class="btn-primary"
+          (click)="onSubmit()"
+          [disabled]="selectedDocumentIds.length === 0"
+        >
+          Vincular Selecionados e Continuar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

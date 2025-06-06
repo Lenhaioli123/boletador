@@ -1,0 +1,104 @@
+<div class="min-h-screen bg-gray-50">
+  <header class="bg-white shadow-sm py-4">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center">
+      <button 
+        (click)="navigateHome()" 
+        class="mr-4 p-2 rounded-full hover:bg-gray-100"
+      >
+        <lucide-icon name="arrow-left" class="h-5 w-5 text-gray-600"></lucide-icon>
+      </button>
+      <h1 class="text-xl font-semibold text-gray-900 flex items-center">
+        <lucide-icon name="trending-up" class="mr-2 h-6 w-6 text-green-700"></lucide-icon>
+        Operação de Compra: Selecionar Ordem(ns)
+      </h1>
+    </div>
+  </header>
+  
+  <main class="py-8">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="bg-white shadow rounded-lg overflow-hidden">
+        <div class="px-4 py-5 sm:p-6">
+          <h2 class="text-lg font-medium text-gray-900 mb-4">
+            Selecione uma ou mais ordens para prosseguir
+          </h2>
+          
+          <div class="table-container">
+            <table class="data-table">
+              <thead class="table-header">
+                <tr>
+                  <th class="table-header-cell w-12"></th>
+                  <th class="table-header-cell">ID da Ordem</th>
+                  <th class="table-header-cell">Nome do Cliente</th>
+                  <th class="table-header-cell">Moeda</th>
+                  <th class="table-header-cell">Valor</th>
+                  <th class="table-header-cell">Data da Ordem</th>
+                </tr>
+              </thead>
+              <tbody class="table-body">
+                <tr 
+                  *ngFor="let order of orders$ | async" 
+                  [class]="'table-row ' + (isSelected(order.id) ? 'bg-green-50' : '')"
+                  (click)="toggleOrderSelection(order.id)"
+                >
+                  <td class="table-cell">
+                    <div class="flex items-center justify-center">
+                      <div [class]="'h-5 w-5 border rounded flex items-center justify-center ' + 
+                        (isSelected(order.id) ? 'bg-green-600 border-green-600' : 'border-gray-300')">
+                        <lucide-icon 
+                          *ngIf="isSelected(order.id)" 
+                          name="check" 
+                          class="h-4 w-4 text-white">
+                        </lucide-icon>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="table-cell font-medium text-gray-900">{{ order.id }}</td>
+                  <td class="table-cell">{{ order.clientName }}</td>
+                  <td class="table-cell">{{ order.currency }}</td>
+                  <td class="table-cell">
+                    {{ order.amount | number:'1.2-2':'pt-BR' }}
+                  </td>
+                  <td class="table-cell">
+                    {{ order.date | date:'dd/MM/yyyy' }}
+                  </td>
+                </tr>
+                
+                <tr *ngIf="(orders$ | async)?.length === 0">
+                  <td colspan="6" class="table-cell text-center py-8 text-gray-500">
+                    Nenhuma ordem disponível.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        
+        <div class="px-4 py-4 sm:px-6 bg-gray-50 flex flex-col sm:flex-row justify-between items-center gap-4">
+          <button 
+            class="btn-secondary w-full sm:w-auto order-2 sm:order-1"
+            (click)="navigateHome()"
+          >
+            Cancelar
+          </button>
+          
+          <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto order-1 sm:order-2">
+            <button 
+              class="btn-primary w-full sm:w-auto"
+              (click)="handleNewBuyWithoutOrder()"
+            >
+              Nova Compra Sem Ordem
+            </button>
+            
+            <button 
+              class="btn-success w-full sm:w-auto"
+              (click)="handleContinueWithOrders()"
+              [disabled]="selectedOrderIds.length === 0"
+            >
+              Prosseguir com Ordem(ns) Selecionada(s)
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

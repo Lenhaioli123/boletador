@@ -1,0 +1,315 @@
+<div class="min-h-screen bg-gray-50">
+  <!-- Header with branding and user info -->
+  <div class="bg-white border-b border-gray-200 px-6 py-3">
+    <div class="flex items-center justify-between">
+      <div class="text-lg font-semibold text-blue-900 italic">
+        Rendimento câmbio
+      </div>
+      <div class="flex items-center space-x-4">
+        <lucide-icon name="bell" class="h-5 w-5 text-gray-600"></lucide-icon>
+        <lucide-icon name="user" class="h-5 w-5 text-gray-600"></lucide-icon>
+        <span class="text-sm text-gray-700">Olá, Manuela</span>
+        <div class="w-2 h-2 bg-gray-400 rounded-full"></div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Navigation bar -->
+  <div class="bg-white border-b border-gray-200 px-6 py-4">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center">
+        <button 
+          (click)="navigateBack()"
+          class="mr-4 p-2 rounded-full hover:bg-gray-100"
+        >
+          <lucide-icon name="arrow-left" class="h-5 w-5 text-gray-600"></lucide-icon>
+        </button>
+        <h1 class="text-xl font-semibold text-gray-900">
+          Nova Operação EFX
+        </h1>
+      </div>
+      <button 
+        (click)="navigateBack()"
+        class="p-2 rounded-full hover:bg-gray-100"
+      >
+        <lucide-icon name="x-circle" class="h-6 w-6 text-gray-600"></lucide-icon>
+      </button>
+    </div>
+  </div>
+  
+  <!-- Main content -->
+  <div class="px-6 py-6">
+    <div class="max-w-7xl mx-auto">
+      <!-- Client information -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <app-card title="Nome Cliente">
+          <app-form-field id="clientName" label="Nome do Cliente" [required]="true">
+            <input
+              type="text"
+              id="clientName"
+              class="form-input"
+              formControlName="clientName"
+              placeholder="Digite o nome do cliente"
+            />
+          </app-form-field>
+        </app-card>
+        
+        <app-card title="Doc Cliente">
+          <app-form-field id="clientDocument" label="Documento do Cliente" [required]="true">
+            <input
+              type="text"
+              id="clientDocument"
+              class="form-input"
+              formControlName="clientDocument"
+              placeholder="CPF/CNPJ"
+            />
+          </app-form-field>
+        </app-card>
+      </div>
+      
+      <!-- Operations sections -->
+      <app-card *ngIf="sellOperations.length > 0" className="mb-6" title="Boleto Venda">
+        <div class="space-y-4">
+          <div class="flex justify-between items-center">
+            <span class="text-lg font-medium text-gray-900">Contratos Disponível</span>
+            <span class="text-lg font-bold text-gray-900">
+              USD {{ getTotalForeignValue(sellOperations) | number:'1.2-2':'pt-BR' }}
+            </span>
+          </div>
+          
+          <div class="table-container">
+            <table class="data-table">
+              <thead class="table-header">
+                <tr>
+                  <th class="table-header-cell">Moeda estrangeira</th>
+                  <th class="table-header-cell">Valor em real</th>
+                  <th class="table-header-cell">Taxa cliente</th>
+                  <th class="table-header-cell">Tarifa USD</th>
+                  <th class="table-header-cell">IOF (%)</th>
+                  <th class="table-header-cell">IR (%)</th>
+                  <th class="table-header-cell">VET</th>
+                  <th class="table-header-cell">Total da Operação</th>
+                  <th class="table-header-cell">Ações</th>
+                </tr>
+              </thead>
+              <tbody class="table-body">
+                <tr *ngFor="let operation of sellOperations" class="table-row">
+                  <td class="table-cell">{{ operation.foreignCurrency }}</td>
+                  <td class="table-cell">
+                    R$ {{ operation.domesticCurrencyAmount | number:'1.2-2':'pt-BR' }}
+                  </td>
+                  <td class="table-cell">
+                    {{ operation.exchangeRate | number:'1.4-4':'pt-BR' }}
+                  </td>
+                  <td class="table-cell">{{ operation.fee || 0 }}</td>
+                  <td class="table-cell">{{ operation.iof || 0 }}%</td>
+                  <td class="table-cell">{{ operation.ir || 0 }}%</td>
+                  <td class="table-cell">-</td>
+                  <td class="table-cell">
+                    R$ {{ operation.totalAmount | number:'1.2-2':'pt-BR' }}
+                  </td>
+                  <td class="table-cell">
+                    <button class="text-blue-600 hover:text-blue-800">Ações</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </app-card>
+      
+      <app-card *ngIf="buyOperations.length > 0" className="mb-6" title="Boleto Compra">
+        <div class="space-y-4">
+          <div class="flex justify-between items-center">
+            <span class="text-lg font-medium text-gray-900">Contratos Disponível</span>
+            <span class="text-lg font-bold text-gray-900">
+              USD {{ getTotalForeignValue(buyOperations) | number:'1.2-2':'pt-BR' }}
+            </span>
+          </div>
+          
+          <div class="table-container">
+            <table class="data-table">
+              <thead class="table-header">
+                <tr>
+                  <th class="table-header-cell">Moeda estrangeira</th>
+                  <th class="table-header-cell">Valor em real</th>
+                  <th class="table-header-cell">Taxa cliente</th>
+                  <th class="table-header-cell">Tarifa USD</th>
+                  <th class="table-header-cell">IOF (%)</th>
+                  <th class="table-header-cell">IR (%)</th>
+                  <th class="table-header-cell">VET</th>
+                  <th class="table-header-cell">Total da Operação</th>
+                  <th class="table-header-cell">Ações</th>
+                </tr>
+              </thead>
+              <tbody class="table-body">
+                <tr *ngFor="let operation of buyOperations" class="table-row">
+                  <td class="table-cell">{{ operation.foreignCurrency }}</td>
+                  <td class="table-cell">
+                    R$ {{ operation.domesticCurrencyAmount | number:'1.2-2':'pt-BR' }}
+                  </td>
+                  <td class="table-cell">
+                    {{ operation.exchangeRate | number:'1.4-4':'pt-BR' }}
+                  </td>
+                  <td class="table-cell">{{ operation.fee || 0 }}</td>
+                  <td class="table-cell">{{ operation.iof || 0 }}%</td>
+                  <td class="table-cell">{{ operation.ir || 0 }}%</td>
+                  <td class="table-cell">-</td>
+                  <td class="table-cell">
+                    R$ {{ operation.totalAmount | number:'1.2-2':'pt-BR' }}
+                  </td>
+                  <td class="table-cell">
+                    <button class="text-blue-600 hover:text-blue-800">Ações</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </app-card>
+      
+      <!-- Form section -->
+      <app-card className="mb-6">
+        <form [formGroup]="efxForm" (ngSubmit)="onSubmit()">
+          <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <app-form-field id="type" label="Tipo" [required]="true">
+              <select 
+                id="type"
+                class="form-select"
+                formControlName="type"
+              >
+                <option value="Venda">Venda</option>
+                <option value="Compra">Compra</option>
+              </select>
+            </app-form-field>
+            
+            <app-form-field id="foreignCurrencyValue" label="Valor Moeda Estrangeira" [required]="true">
+              <app-currency-input
+                id="foreignCurrencyValue"
+                formControlName="foreignCurrencyValue">
+              </app-currency-input>
+            </app-form-field>
+            
+            <app-form-field id="country" label="País" [required]="true">
+              <select 
+                id="country"
+                class="form-select"
+                formControlName="country"
+              >
+                <option value="">Escolha um País</option>
+                <option value="USA">Estados Unidos</option>
+                <option value="GBR">Reino Unido</option>
+                <option value="DEU">Alemanha</option>
+                <option value="FRA">França</option>
+                <option value="ESP">Espanha</option>
+                <option value="ITA">Itália</option>
+                <option value="PRT">Portugal</option>
+                <option value="CHN">China</option>
+                <option value="JPN">Japão</option>
+              </select>
+            </app-form-field>
+            
+            <app-form-field id="purpose" label="Finalidade" [required]="true">
+              <select 
+                id="purpose"
+                class="form-select"
+                formControlName="purpose"
+              >
+                <option value="">Selecione...</option>
+                <option value="ImportOfGoods">Importação de Mercadorias</option>
+                <option value="TechnicalServices">Serviços Técnicos</option>
+                <option value="ResidentMaintenance">Manutenção de Residente</option>
+                <option value="ImportPayment">Pagamento de Importação</option>
+                <option value="Other">Outros</option>
+              </select>
+            </app-form-field>
+            
+            <app-form-field id="purposeDescription" label="Descrição da Finalidade">
+              <input
+                type="text"
+                id="purposeDescription"
+                class="form-input"
+                formControlName="purposeDescription"
+                placeholder="Descrição da Finalidade"
+              />
+            </app-form-field>
+            
+            <app-form-field id="valutaNational" label="Valuta MN" [required]="true">
+              <select 
+                id="valutaNational"
+                class="form-select"
+                formControlName="valutaNational"
+              >
+                <option value="D0">D0 (Hoje)</option>
+                <option value="D1">D1 (Amanhã)</option>
+                <option value="D2">D2 (Depois de Amanhã)</option>
+              </select>
+            </app-form-field>
+            
+            <app-form-field id="valutaForeign" label="Valuta ME" [required]="true">
+              <select 
+                id="valutaForeign"
+                class="form-select"
+                formControlName="valutaForeign"
+              >
+                <option value="D0">D0 (Hoje)</option>
+                <option value="D1">D1 (Amanhã)</option>
+                <option value="D2">D2 (Depois de Amanhã)</option>
+              </select>
+            </app-form-field>
+            
+            <app-form-field id="deliveryType" label="Tipo de Entrega" [required]="true">
+              <select 
+                id="deliveryType"
+                class="form-select"
+                formControlName="deliveryType"
+              >
+                <option value="Ordem">Ordem</option>
+                <option value="Conta">Conta</option>
+                <option value="Cheque">Cheque</option>
+                <option value="Especie">Espécie</option>
+              </select>
+            </app-form-field>
+          </div>
+          
+          <!-- Payment data toggle -->
+          <div class="mt-6 pt-6 border-t border-gray-200">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center">
+                <button
+                  type="button"
+                  (click)="showPaymentData = !showPaymentData"
+                  class="flex items-center text-blue-600 hover:text-blue-800"
+                >
+                  <lucide-icon 
+                    name="plus" 
+                    [class]="'h-4 w-4 mr-2 transform transition-transform ' + (showPaymentData ? 'rotate-45' : '')">
+                  </lucide-icon>
+                  Mostrar Dados de Pagamento
+                </button>
+              </div>
+            </div>
+            
+            <div *ngIf="showPaymentData" class="mt-4 p-4 bg-gray-50 rounded-lg">
+              <p class="text-gray-600">
+                Dados de pagamento seriam exibidos aqui (campos adicionais para informações bancárias, 
+                contas de destino, etc.)
+              </p>
+            </div>
+          </div>
+        </form>
+      </app-card>
+      
+      <!-- Action button -->
+      <div class="flex justify-center">
+        <button 
+          class="btn-primary px-12 py-3 text-lg"
+          (click)="onSubmit()"
+          [disabled]="!efxForm.valid"
+        >
+          Próximo
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

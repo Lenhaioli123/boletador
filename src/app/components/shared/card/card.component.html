@@ -1,0 +1,4 @@
+<div [class]="'card ' + className">
+  <h3 *ngIf="title" class="text-lg font-medium mb-4 pb-2 border-b border-gray-200">{{ title }}</h3>
+  <ng-content></ng-content>
+</div>

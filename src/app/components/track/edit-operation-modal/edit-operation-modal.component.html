@@ -1,0 +1,160 @@
+<div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+  <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-auto">
+    <div class="p-6">
+      <div class="flex items-start justify-between mb-4">
+        <h2 class="text-xl font-semibold text-gray-900">
+          Completar Dados da Operação
+        </h2>
+        <button 
+          class="text-gray-400 hover:text-gray-500"
+          (click)="onClose()"
+        >
+          <lucide-icon name="x-circle" class="h-6 w-6"></lucide-icon>
+        </button>
+      </div>
+      
+      <div class="mb-6" *ngIf="operation">
+        <div class="bg-gray-50 p-4 rounded-lg mb-4">
+          <h3 class="font-medium text-gray-900 mb-2">Resumo da Operação:</h3>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <p class="text-sm text-gray-500">ID</p>
+              <p class="font-medium">{{ operation.id }}</p>
+            </div>
+            <div>
+              <p class="text-sm text-gray-500">Tipo</p>
+              <p class="font-medium">{{ operation.type === 'buy' ? 'Compra' : 'Venda' }}</p>
+            </div>
+            <div>
+              <p class="text-sm text-gray-500">Moeda</p>
+              <p class="font-medium">{{ operation.foreignCurrency }}</p>
+            </div>
+            <div>
+              <p class="text-sm text-gray-500">Valor</p>
+              <p class="font-medium">
+                {{ operation.foreignCurrencyAmount | number:'1.2-2':'pt-BR' }}
+              </p>
+            </div>
+            <div class="col-span-2">
+              <p class="text-sm text-gray-500">Total (BRL)</p>
+              <p class="font-medium">
+                R$ {{ operation.totalAmount | number:'1.2-2':'pt-BR' }}
+              </p>
+            </div>
+          </div>
+        </div>
+        
+        <form [formGroup]="editForm" (ngSubmit)="onSubmit()">
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <app-form-field id="nature" label="Natureza" [required]="true">
+              <select 
+                id="nature"
+                class="form-select"
+                formControlName="nature"
+                required
+              >
+                <option value="">Selecione...</option>
+                <option value="ImportOfGoods">Importação de Mercadorias</option>
+                <option value="TechnicalServices">Serviços Técnicos</option>
+                <option value="ResidentMaintenance">Manutenção de Residente</option>
+                <option value="ImportPayment">Pagamento de Importação</option>
+                <option value="Other">Outros</option>
+              </select>
+            </app-form-field>
+            
+            <app-form-field id="iof" label="IOF (%)">
+              <select 
+                id="iof"
+                class="form-select"
+                formControlName="iof"
+              >
+                <option value="">Selecione...</option>
+                <option value="0.38">0.38%</option>
+                <option value="1.1">1.1%</option>
+                <option value="0.0">Isento</option>
+              </select>
+            </app-form-field>
+            
+            <app-form-field id="ir" label="IR (%)">
+              <app-percentage-input 
+                id="ir"
+                formControlName="ir">
+              </app-percentage-input>
+            </app-form-field>
+            
+            <app-form-field id="valutaNational" label="Valuta Nacional" [required]="true">
+              <select 
+                id="valutaNational"
+                class="form-select"
+                formControlName="valutaNational"
+                required
+              >
+                <option value="D0">D0 (Hoje)</option>
+                <option value="D1">D1 (Amanhã)</option>
+                <option value="D2">D2 (Depois de Amanhã)</option>
+              </select>
+            </app-form-field>
+            
+            <app-form-field id="valutaForeign" label="Valuta Estrangeira" [required]="true">
+              <select 
+                id="valutaForeign"
+                class="form-select"
+                formControlName="valutaForeign"
+                required
+              >
+                <option value="D0">D0 (Hoje)</option>
+                <option value="D1">D1 (Amanhã)</option>
+                <option value="D2">D2 (Depois de Amanhã)</option>
+              </select>
+            </app-form-field>
+            
+            <app-form-field id="settlementTypeBrazil" label="Tipo de Liquidação no Brasil" [required]="true">
+              <select 
+                id="settlementTypeBrazil"
+                class="form-select"
+                formControlName="settlementTypeBrazil"
+                required
+              >
+                <option value="Conta">Conta</option>
+                <option value="Cheque">Cheque</option>
+                <option value="Ordem">Ordem</option>
+                <option value="Especie">Espécie</option>
+              </select>
+            </app-form-field>
+            
+            <app-form-field id="settlementTypeAbroad" label="Tipo de Liquidação no Exterior" [required]="true">
+              <select 
+                id="settlementTypeAbroad"
+                class="form-select"
+                formControlName="settlementTypeAbroad"
+                required
+              >
+                <option value="Conta">Conta</option>
+                <option value="Cheque">Cheque</option>
+                <option value="Ordem">Ordem</option>
+                <option value="Especie">Espécie</option>
+              </select>
+            </app-form-field>
+          </div>
+          
+          <div class="flex justify-end mt-6 space-x-4">
+            <button 
+              type="button"
+              class="btn-secondary"
+              (click)="onClose()"
+            >
+              Cancelar
+            </button>
+            <button 
+              type="submit"
+              class="btn-success"
+              [disabled]="!editForm.valid"
+            >
+              Salvar Alterações
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

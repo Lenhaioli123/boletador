@@ -1,0 +1,8 @@
+<div [class]="'form-group ' + className">
+  <label [for]="id" class="form-label">
+    {{ label }}
+    <span *ngIf="required" class="text-red-500 ml-1">*</span>
+  </label>
+  <ng-content></ng-content>
+  <p *ngIf="helpText" class="mt-1 text-sm text-gray-500">{{ helpText }}</p>
+</div>
